@@ -1,0 +1,96 @@
+body {
+  font-family: "Roboto Condensed", Helvetica, sans-serif;
+  background-color: #f7f7f7;
+}
+.container {
+  margin: 50px auto;
+  max-width: 1350px;
+}
+a {
+  text-decoration: none;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+table,
+th,
+td {
+  border: 1px solid #bbb;
+  text-align: left;
+}
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+th {
+  background-color: #ddd;
+}
+th,
+td {
+  padding: 5px;
+}
+button {
+  cursor: pointer;
+}
+/*Initial style sort*/
+.tablemanager th.sorterHeader {
+  cursor: pointer;
+}
+.tablemanager th.sorterHeader:after {
+  content: " \f0dc";
+  font-family: "FontAwesome";
+}
+/*Style sort desc*/
+.tablemanager th.sortingDesc:after {
+  content: " \f0dd";
+  font-family: "FontAwesome";
+}
+/*Style sort asc*/
+.tablemanager th.sortingAsc:after {
+  content: " \f0de";
+  font-family: "FontAwesome";
+}
+/*Style disabled*/
+/* .tablemanager th.disableSort {
+
+} */
+#for_numrows {
+  padding: 10px;
+  float: left;
+}
+#for_filter_by {
+  padding: 10px;
+  float: right;
+}
+#pagesControllers {
+  display: block;
+  text-align: center;
+}
+
+header {
+  height: 60px;
+  background-color: #f2f2f2;
+  box-shadow: 0 0 10px #000;
+}
+
+ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 15px;
+  position: relative;
+}
+
+ul li {
+  display: inline;
+  list-style: none;
+}
+
+ul li a {
+  text-decoration: none;
+  color: #000000;
+  font-size: 18px;
+  padding: 0px 0px 0px 20px;
+}
