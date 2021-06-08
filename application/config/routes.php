@@ -38,6 +38,7 @@
 |
 */
 
+$route['load_addUser'] = "messaging/load_addUser";
 $route['load_addAdmin'] = "messaging/load_addAdmin";
 $route['load_addSMS'] = "messaging/load_addSMS";
 $route['admin'] = "messaging/admin";

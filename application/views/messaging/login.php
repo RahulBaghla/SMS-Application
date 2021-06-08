@@ -3,7 +3,7 @@
 <div class="card">
 <?php echo form_open('messaging/login') ?>
       <h2 class="title"> Log in</h2>
-      <p class="subtitle">Don't have an account? <a href="<?php echo site_url('load_register') ?>">Register</a></p>
+      <!-- <p class="subtitle">Don't have an account? <a href="<?php //echo site_url('load_register') ?>">Register</a></p> -->
       <div class="email-login">
          <label for="email"> <b>Email</b></label>
          <input type="email" placeholder="Enter Email" name="email" value="<?php echo set_value('email') ?>" required>

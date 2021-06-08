@@ -14,5 +14,7 @@
         function addSMS($data){
             return $this->db->insert('sms',$data);
         }
+
+        
     }
 ?>

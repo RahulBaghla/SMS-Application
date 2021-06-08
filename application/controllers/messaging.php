@@ -16,16 +16,16 @@
         }
 
         public function load_register(){
-            $this->load->library('session');
-            if($this->session->userdata('userId')){
-                redirect('user');
-            }elseif($this->session->userdata('adminId')){
-                redirect('admin');
-            }
-            else{
-                $data['title'] = 'Register';
-                $this->load->view('messaging/register',$data);
-                }
+            // $this->load->library('session');
+            // if($this->session->userdata('userId')){
+            //     redirect('user');
+            // }elseif($this->session->userdata('adminId')){
+            //     redirect('admin');
+            // }
+            // else{
+            //     $data['title'] = 'Register';
+            //     $this->load->view('messaging/register',$data);
+            //     }
         }
 
         public function login(){
@@ -208,7 +208,7 @@
                 
                 $this->load->library('email');
                 $message = "$data[name] has sent a new SMS request for approval \r\nSchool Name : $data[schoolname] \r\nSMS: $data[totalsms]";
-                $this->email->from('rahul.baghla1707@gmail.com', 'Rahul Baghla');
+                $this->email->from('rahul.baghla1707@gmail.com', 'Schoolpad');
                 $this->email->to(implode(', ', $admins));
                 $this->email->subject('Confirmation Email');
                 $this->email->message($message);
@@ -246,7 +246,7 @@
                 $admin = $this->session->userdata('userName');
                 $this->load->library('email');
                 $message = "$admin has processed your request \r\nOf $data[totalsms] SMS for $data[schoolname]";
-                $this->email->from('rahul.baghla1707@gmail.com', 'Rahul Baghla');
+                $this->email->from('rahul.baghla1707@gmail.com', 'Schoolpad');
                 $this->email->to($data['email']);
                 $this->email->subject('Processed Email');
                 $this->email->message($message);
@@ -283,7 +283,7 @@
                 $admin = $this->session->userdata('userName');
                 $this->load->library('email');
                 $message = "$admin has cancelled your request \r\nOf $data[totalsms] SMS for $data[schoolname]";
-                $this->email->from('rahul.baghla1707@gmail.com', 'Rahul Baghla');
+                $this->email->from('rahul.baghla1707@gmail.com', 'Schoolpad');
                 $this->email->to($data['email']);
                 $this->email->subject('Cancelled Email');
                 $this->email->message($message);
@@ -303,6 +303,19 @@
             // redirect('admin');
         }
 
+        public function load_addUser(){
+            $this->load->library('session');
+            if($this->session->userdata('adminId')){
+                $data['title'] = 'Add User';
+                $this->load->view('messaging/addUser',$data);
+            }else{
+                    echo ("<script LANGUAGE='JavaScript'>
+                    window.alert('Please Login First');
+                    window.location.href='/messaging';
+                    </script>");
+                }
+        }
+
         public function load_addAdmin(){
             $this->load->library('session');
             if($this->session->userdata('adminId')){
@@ -317,37 +330,128 @@
         }
 
         public function addAdmin(){
-            $data['status'] = 1;
-            
-            $this->db->where('email',$this->input->post('email'));
-            $query = $this->db->get('users');
-            if ($query->num_rows() === 0){
+            $data = array(
+                'name'=> $this->input->post('name'),
+                "email" => $this->input->post('email'),
+                'password' => $this->input->post('password'),
+                'confirmpassword'=>$this->input->post('confirmpassword'),
+                'status'=>1
+            );
+
+            if(!filter_var($data['email'], FILTER_VALIDATE_EMAIL)){
+                echo ("<script LANGUAGE='JavaScript'>
+                window.alert('Please enter a valid email');
+                window.location.href='/messaging/load_addAdmin';
+                </script>");
+                exit();
+            }elseif($data['password'] !== $data['confirmpassword']){
+                echo ("<script LANGUAGE='JavaScript'>
+                window.alert('Passwords do not match !!');
+                window.location.href='/messaging/load_addAdmin';
+                </script>");
+                exit();
+            }else{
+                $this->db->where('email',$data['email']);
+                $query = $this->db->get('users');
+                if ($query->num_rows() > 0){
                     echo ("<script LANGUAGE='JavaScript'>
-                    window.alert('Email Not Found !!');
+                    window.alert('Email Already Exist');
                     window.location.href='/messaging/load_addAdmin';
                     </script>");
                     exit();
-            }else{
-                foreach($query->result() as $row){
-                    if($row->status != 0){
-                        echo ("<script LANGUAGE='JavaScript'>
-                            window.alert('Already Admin');
-                            window.location.href='/messaging/load_addAdmin';
-                            </script>");
-                        exit(); 
-                    }else{
-                        $this->db->update('users', $data);
-                        echo ("<script LANGUAGE='JavaScript'>
-                        window.alert('Admin Added Successfully');
-                        window.location.href='/messaging/admin';
-                        </script>");
-                        exit();
-                    }
-                 exit();
                 }
-            }    
+                else{
+                // $this->load->model('messaging_model');
+                    if($this->messaging_model->signup($data)){
+
+                        $admin = $this->session->userdata('userName');
+                        $this->load->library('email');
+                        $message = "$admin added you as Admin \r\nYour Credential details are: \r\nEmail Id: $data[email] \r\nPassword : $data[password]";
+                        $this->email->from('rahul.baghla1707@gmail.com', 'Schoolpad');
+                        $this->email->to($data['email']);
+                        $this->email->subject('New Admin');
+                        $this->email->message($message);
+                
+                        if($this->email->send()){
+                            echo ("<script LANGUAGE='JavaScript'>
+                            window.alert('Admin Successfully Registered');
+                            window.location.href='/messaging/admin';
+                            </script>");
+                            exit();
+                        }else{
+                            echo "Failed to Accept";
+                            show_error($this->email->print_debugger());             
+                        }
+                    }else{
+                        echo 'User Addition Failed';
+                    }
+                }
+
+            }  
         }
 
+        public function addUser(){
+            $data = array(
+                'name'=> $this->input->post('name'),
+                "email" => $this->input->post('email'),
+                'password' => $this->input->post('password'),
+                'confirmpassword'=>$this->input->post('confirmpassword'),
+                'status'=>0
+            );
+
+            if(!filter_var($data['email'], FILTER_VALIDATE_EMAIL)){
+                echo ("<script LANGUAGE='JavaScript'>
+                window.alert('Please enter a valid email');
+                window.location.href='/messaging/load_addUser';
+                </script>");
+                exit();
+            }elseif($data['password'] !== $data['confirmpassword']){
+                echo ("<script LANGUAGE='JavaScript'>
+                window.alert('Passwords do not match !!');
+                window.location.href='/messaging/load_addUser';
+                </script>");
+                exit();
+            }else{
+                $this->db->where('email',$data['email']);
+                $query = $this->db->get('users');
+                if ($query->num_rows() > 0){
+                    echo ("<script LANGUAGE='JavaScript'>
+                    window.alert('Email Already Exist');
+                    window.location.href='/messaging/load_addUser';
+                    </script>");
+                    exit();
+                }
+                else{
+                // $this->load->model('messaging_model');
+                    if($this->messaging_model->signup($data)){
+
+                        $admin = $this->session->userdata('userName');
+                        $this->load->library('email');
+                        $message = "$admin added you as User \r\nYour Credential details are: \r\nEmail Id: $data[email] \r\nPassword : $data[password]";
+                        $this->email->from('rahul.baghla1707@gmail.com', 'Schoolpad');
+                        $this->email->to($data['email']);
+                        $this->email->subject('New User');
+                        $this->email->message($message);
+                
+                        if($this->email->send()){
+                            echo ("<script LANGUAGE='JavaScript'>
+                            window.alert('User Successfully Registered');
+                            window.location.href='/messaging/admin';
+                            </script>");
+                            exit();
+                        }else{
+                            echo "Failed to Accept";
+                            show_error($this->email->print_debugger());             
+                        }
+
+                        
+                    }else{
+                        echo 'User Addition Failed';
+                    }
+                }
+
+            }
+        }
         
     }
 ?>

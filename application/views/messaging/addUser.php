@@ -17,8 +17,8 @@
 <?php $this->load->view('messaging/includes/header',$title) ?>
 
 <div class="card">
-<?php echo form_open('messaging/addAdmin') ?>
-      <h2 class="title">Add Admin</h2>
+<?php echo form_open('messaging/addUser') ?>
+      <h2 class="title">Add User</h2>
       <!-- <p class="subtitle">Already have an account? <a href="<?php //echo site_url('/') ?>"> Log in</a></p> -->
       <div class="email-login">
          <label for="name"> <b>Name</b></label>
